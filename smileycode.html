@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Encoder/Decoder for smiley face code</title>
+</head>
+<body>
+<input type="text" id="inputBox">
+<br>
+<button onclick="encodeBox()">Encode</button><button onclick="decodeBox()">Decode</button>
+<script type="text/javascript">
+function encode(str) {
+	var retval = "";
+	for (var i = 0; i < str.length; i++) {
+		var code = str.charCodeAt(i);
+		//console.log(code.toString(2));
+		for (var b = 6; b >= 0; b--) {
+			if ((code >> b) & 1 > 0) {
+				retval += ":) ";
+			} else {
+				retval += ":( ";
+			}
+		}
+	}
+	return retval;
+}
+
+function encode4(str) {
+	var retval = "";
+	for (var i = 0; i < str.length; i++) {
+		var code = str.charCodeAt(i).toString(4);
+		//console.log(code);
+		var smiley = code.replace(/0/g, ":(").replace(/1/g, ":)").replace(/2/g, ":P").replace(/3/g, ":D");
+		retval += smiley + " ";
+	}
+	return retval;
+}
+
+function decode4(str) {
+	var retval = "";
+	var all = str.split(" ");
+	for (var i = 0; i < all.length; i++) {
+		var code = all[i];
+		var numberZ = code.replace(new RegExp(":\\(", "g"), "0").
+			replace(new RegExp(":\\)", "g"), "1").
+			replace(/:P/g, "2").
+			replace(/:D/g, "3");
+		//console.log(numberZ);
+		retval += String.fromCharCode(parseInt(numberZ, 4));
+	}
+	return retval;
+}
+
+function decode(str) {
+	var retval = "";
+	var all = str.split(" ");
+	//console.log(all.length / 7);
+	for (var i = 0; i < all.length; i += 7) {
+		var val = 0;
+		for (var b = 0; b < 7; b++) {
+			var smile = all[i + b];
+			//console.log(smile);
+			if (smile === ":)") {
+				val |= 1 << (6 - b);
+			}
+		}
+		//console.log(val.toString(2));
+		retval += String.fromCharCode(val);
+	}
+	return retval;
+}
+function encodeBox() {
+	var bar = document.getElementById("inputBox");
+	bar.value = encode4(bar.value);
+}
+function decodeBox() {
+	var bar = document.getElementById("inputBox");
+	bar.value = decode4(bar.value);
+}
+</script>
+</body>
+</html>
